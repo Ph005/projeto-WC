@@ -1,77 +1,82 @@
 <?php
-require_once 'config/database.php';
-require_once 'models/Selecao.php';
-
 class SelecaoController {
-    public function listar() {
+
+    private function getModel() {
         $database = new Database();
         $db = $database->getConnection();
-        $selecao = new Selecao($db);
+        return new Selecao($db);
+    }
 
+    public function listar() {
+        $selecao = $this->getModel();
         $stmt = $selecao->read();
-        
-        // O index.php agora está na raiz, então o caminho para a view é direto [cite: 88]
-        include 'views/lista.php'; 
+        include 'views/lista.php';
+    }
+
+    public function criar() {
+        include 'views/create.php';
     }
 
     public function salvar() {
-        $database = new Database();
-        $db = $database->getConnection();
-        $selecao = new Selecao($db);
+        $nomeArquivo = null;
 
-        // Pega os dados que o usuário digitou no formulário
+                if (isset($_FILES['bandeira']) && $_FILES['bandeira']['error'] === 0) {
+            $extensao = pathinfo($_FILES['bandeira']['name'], PATHINFO_EXTENSION);
+            $nomeArquivo = md5(uniqid()) . "." . $extensao;
+            
+            if (!is_dir('uploads')) { mkdir('uploads', 0777, true); }
+            move_uploaded_file($_FILES['bandeira']['tmp_name'], "uploads/" . $nomeArquivo);
+        }
+
+        $selecao = $this->getModel();
         $selecao->nome = $_POST['nome'];
         $selecao->grupo = $_POST['grupo'];
         $selecao->titulos = $_POST['titulos'];
+        $selecao->bandeira = $nomeArquivo;
 
-        // Chama o "create" que acabamos de colocar no Model
         if($selecao->create()) {
-            header("Location: index.php"); // Se salvou, volta pra lista
-        } else {
-            echo "Erro ao cadastrar!";
+            header("Location: index.php");
         }
     }
 
-    public function editar($id) {
-        $database = new Database();
-        $db = $database->getConnection();
-        $selecao = new Selecao($db);
+    public function excluir() {
+        $id = $_GET['id'];
+        $selecao = $this->getModel();
+        if($selecao->delete($id)) {
+            header("Location: index.php");
+        }
+    }
 
+            public function editar() {
+        $id = $_GET['id'];
+        $selecao = $this->getModel();
         $selecao->id = $id;
         
-        // Se o Model achar a seleção no banco...
         if($selecao->readOne()) {
-            // ...ele abre a página de editar (que vamos criar)
-            include 'views/edit.php';   
+            include 'views/edit.php';
+        } else {
+            header("Location: index.php");
         }
     }
 
     public function atualizar() {
-        $database = new Database();
-        $db = $database->getConnection();
-        $selecao = new Selecao($db);
-
+        $selecao = $this->getModel();
         $selecao->id = $_POST['id'];
         $selecao->nome = $_POST['nome'];
         $selecao->grupo = $_POST['grupo'];
         $selecao->titulos = $_POST['titulos'];
+        
+        if (isset($_FILES['bandeira']) && $_FILES['bandeira']['error'] === 0) {
+            $extensao = pathinfo($_FILES['bandeira']['name'], PATHINFO_EXTENSION);
+            $nomeArquivo = md5(uniqid()) . "." . $extensao;
+            move_uploaded_file($_FILES['bandeira']['tmp_name'], "uploads/" . $nomeArquivo);
+            $selecao->bandeira = $nomeArquivo;
+        } else {
+            $selecao->bandeira = $_POST['bandeira_atual'];
+        }
 
         if($selecao->update()) {
             header("Location: index.php");
         }
-    }  
-   public function excluir($id) {
-        // ESTA LINHA É SÓ PARA TESTE:
-        // die("O controlador recebeu a ordem de excluir o ID: " . $id);
-
-        $database = new Database();
-        $db = $database->getConnection();
-        $selecao = new Selecao($db);
-
-        if ($selecao->delete($id)) {
-        header("Location: index.php");
-        exit(); // Adicione o exit() após o header
-        }
-    }  
+    }
 }
-

@@ -13,7 +13,7 @@ switch ($acao) {
         $controller->listar();
         break;
 
-    case 'novo':
+    case 'criar':
         include 'views/create.php'; 
         break;
 

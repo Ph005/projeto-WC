@@ -2,32 +2,22 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Adicionar Seleção</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input { padding: 8px; width: 300px; }
-        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <title>Novo Cadastro - Copa 2026</title>
 </head>
 <body>
-    <h1>Adicionar Nova Seleção</h1>
-    <form action="index.php?acao=salvar" method="POST">
-        <div class="form-group">
-            <label for="nome">Nome da Seleção:</label>
-            <input type="text" name="nome" id="nome" required>
-        </div>
-        <div class="form-group">
-            <label for="grupo">Grupo (A-L):</label>
-            <input type="text" name="grupo" id="grupo" maxlength="1" required>
-        </div>
-        <div class="form-group">
-            <label for="titulos">Quantidade de Títulos:</label>
-            <input type="number" name="titulos" id="titulos" min="0" value="0">
-        </div>
-        <button type="submit">Salvar Seleção</button>
-        <a href="index.php">Voltar</a>
-    </form>
+    <div class="navbar"><h1>FIFA WORLD CUP 2026 🏆</h1></div>
+    <div class="container">
+        <h2>Cadastrar Seleção</h2>
+        <form action="index.php?acao=salvar" method="POST" enctype="multipart/form-data">
+            <p>Nome da Seleção: <br> <input type="text" name="nome" required></p>
+            <p>Grupo: <br> <input type="text" name="grupo" maxlength="1" required></p>
+            <p>Títulos: <br> <input type="number" name="titulos" value="0"></p>
+            <p>Bandeira Oficial: <br> <input type="file" name="bandeira" accept="image/*"></p>
+            
+            <button type="submit" class="btn-novo">CADASTRAR SELEÇÃO</button>
+            <a href="index.php" style="margin-left:20px; color:#666;">Cancelar</a>
+        </form>
+    </div>
 </body>
 </html>
